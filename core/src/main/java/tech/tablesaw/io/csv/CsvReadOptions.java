@@ -21,6 +21,7 @@ import tech.tablesaw.io.ReadOptions;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -44,8 +45,16 @@ public class CsvReadOptions extends ReadOptions {
         return new Builder(file).tableName(file.getName());
     }
 
+    public static Builder builder(File file, Charset charset) {
+        return new Builder(file, charset).tableName(file.getName());
+    }
+
     public static Builder builder(String fileName) {
         return new Builder(new File(fileName));
+    }
+
+    public static Builder builder(String fileName, Charset charset) {
+        return new Builder(new File(fileName), charset);
     }
 
     /**
@@ -58,6 +67,10 @@ public class CsvReadOptions extends ReadOptions {
      */
     public static Builder builder(InputStream stream, String tableName) {
         return new Builder(stream).tableName(tableName);
+    }
+
+    public static Builder builder(InputStream stream, Charset charset, String tableName) {
+        return new Builder(stream, charset).tableName(tableName);
     }
 
     /**
@@ -84,6 +97,10 @@ public class CsvReadOptions extends ReadOptions {
 
     public InputStream inputStream() {
         return inputStream;
+    }
+
+    public Charset charset() {
+        return charset;
     }
 
     public String tableName() {
@@ -150,6 +167,10 @@ public class CsvReadOptions extends ReadOptions {
             super(file);
         }
 
+        public Builder(File file, Charset charset) {
+            super(file, charset);
+        }
+
         /**
          * This method may cause tablesaw to buffer the entire InputStream.
          * <p>
@@ -172,6 +193,15 @@ public class CsvReadOptions extends ReadOptions {
          */
         public Builder(InputStream stream) {
             super(stream);
+        }
+
+        public Builder(InputStream stream, Charset charset) {
+            super(stream, charset);
+        }
+
+        public Builder charset(Charset charset) {
+            this.charset = charset;
+            return this;
         }
 
         public Builder tableName(String tableName) {

@@ -3,11 +3,11 @@ package tech.tablesaw.io;
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.Table;
 
-import java.io.Reader;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ByteArrayInputStream;
-import java.io.FileReader;
+import java.io.Reader;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,15 +15,15 @@ public class TableBuildingUtils {
 
     public static Reader createReader(ReadOptions options, byte[] cachedBytes) throws IOException {
 	if (cachedBytes != null) {
-	    return new InputStreamReader(new ByteArrayInputStream(cachedBytes));
+	    return new InputStreamReader(new ByteArrayInputStream(cachedBytes), options.charset());
 	}
         if (options.inputStream() != null) {
-            return new InputStreamReader(options.inputStream());
+            return new InputStreamReader(options.inputStream(), options.charset());
         }
         if (options.reader() != null) {
             return options.reader();
         }
-        return new FileReader(options.file());
+        return new InputStreamReader(new FileInputStream(options.file()), options.charset());
     }
 
     public static Table build(List<String> columnNames, List<String[]> dataRows, ReadOptions options) {

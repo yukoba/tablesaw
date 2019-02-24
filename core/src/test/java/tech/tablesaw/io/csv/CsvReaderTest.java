@@ -32,6 +32,7 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.time.ZoneOffset;
 import java.util.Collections;
@@ -498,4 +499,15 @@ public class CsvReaderTest {
         assertEquals("1 rows X 10001 cols", table1.shape());
     }
 
+    @Test
+    public void testCharset() throws Exception {
+        // Read the CSV file
+        Table table = Table.read().csv(CsvReadOptions
+                .builder("../data/charset_windows-31j.csv", Charset.forName("Windows-31J")));
+
+        assertEquals(2, table.rowCount());
+
+        // Look at the column names
+        assertEquals("[何行目, 名字, 都道府県]", table.columnNames().toString());
+    }
 }

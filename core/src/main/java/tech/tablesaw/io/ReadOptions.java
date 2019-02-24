@@ -21,6 +21,7 @@ import tech.tablesaw.api.ColumnType;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -63,6 +64,7 @@ public class ReadOptions {
     protected final Reader reader;
     protected final InputStream inputStream;
 
+    protected final Charset charset;
     protected final String tableName;
     protected final boolean sample;
     protected final String dateFormat;
@@ -89,6 +91,7 @@ public class ReadOptions {
         file = builder.file;
         reader = builder.reader;
         inputStream = builder.inputStream;
+        charset = builder.charset;
         tableName = builder.tableName;
         sample = builder.sample;
         dateFormat = builder.dateFormat;
@@ -109,8 +112,16 @@ public class ReadOptions {
         return new Builder(file).tableName(file.getName());
     }
 
+    public static Builder builder(File file, Charset charset) {
+        return new Builder(file, charset).tableName(file.getName());
+    }
+
     public static Builder builder(String fileName) {
         return new Builder(new File(fileName));
+    }
+
+    public static Builder builder(String fileName, Charset charset) {
+        return new Builder(new File(fileName), charset);
     }
 
     /**
@@ -123,6 +134,10 @@ public class ReadOptions {
      */
     public static Builder builder(InputStream stream, String tableName) {
         return new Builder(stream).tableName(tableName);
+    }
+
+    public static Builder builder(InputStream stream, Charset charset, String tableName) {
+        return new Builder(stream, charset).tableName(tableName);
     }
 
     /**
@@ -149,6 +164,10 @@ public class ReadOptions {
 
     public InputStream inputStream() {
         return inputStream;
+    }
+
+    public Charset charset() {
+        return charset;
     }
 
     public String tableName() {
@@ -201,6 +220,7 @@ public class ReadOptions {
         InputStream inputStream;
         protected File file;
         protected Reader reader;
+        protected Charset charset = Charset.defaultCharset();
         protected String tableName = "";
         protected boolean sample = true;
         protected String dateFormat;
@@ -212,8 +232,13 @@ public class ReadOptions {
         private boolean header = true;
 
         public Builder(File file) {
+            this(file, Charset.defaultCharset());
+        }
+
+        public Builder(File file, Charset charset) {
             this.file = file;
             this.tableName = file.getName();
+            this.charset = charset;
         }
 
         /**
@@ -238,6 +263,16 @@ public class ReadOptions {
          */
         public Builder(InputStream stream) {
             this.inputStream = stream;
+        }
+
+        public Builder(InputStream stream, Charset charset) {
+            this.inputStream = stream;
+            this.charset = charset;
+        }
+
+        public Builder charset(Charset charset) {
+            this.charset = charset;
+            return this;
         }
 
         public Builder tableName(String tableName) {

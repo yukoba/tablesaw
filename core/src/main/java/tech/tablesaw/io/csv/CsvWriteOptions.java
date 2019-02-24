@@ -1,6 +1,7 @@
 package tech.tablesaw.io.csv;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 
 public class CsvWriteOptions {
@@ -63,12 +64,20 @@ public class CsvWriteOptions {
         private char quoteChar = '"';
 
         public Builder(String fileName) throws IOException {
+            this(fileName, Charset.defaultCharset());
+        }
+
+        public Builder(String fileName, Charset charset) throws IOException {
             File file = Paths.get(fileName).toFile();
-            this.writer = new FileWriter(file);
+            this.writer = new OutputStreamWriter(new FileOutputStream(file), charset);
         }
 
         public Builder(File file) throws IOException {
-            this.writer = new FileWriter(file);
+            this(file, Charset.defaultCharset());
+        }
+
+        public Builder(File file, Charset charset) throws IOException {
+            this.writer = new OutputStreamWriter(new FileOutputStream(file), charset);
         }
 
         public Builder(Writer writer) {
@@ -76,7 +85,11 @@ public class CsvWriteOptions {
         }
 
         public Builder(OutputStream stream) {
-            this.writer = new OutputStreamWriter(stream);
+            this(stream, Charset.defaultCharset());
+        }
+
+        public Builder(OutputStream stream, Charset charset) {
+            this.writer = new OutputStreamWriter(stream, charset);
         }
 
         public CsvWriteOptions.Builder separator(char separator) {
